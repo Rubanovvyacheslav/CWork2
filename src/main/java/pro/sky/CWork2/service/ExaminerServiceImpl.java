@@ -2,7 +2,7 @@ package pro.sky.CWork2.service;
 
 import org.springframework.stereotype.Service;
 import pro.sky.CWork2.domain.Question;
-import pro.sky.CWork2.exception.BAD_REQUEST;
+import pro.sky.CWork2.exception.BadRequestException;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -20,7 +20,7 @@ public class ExaminerServiceImpl implements ExaminerService {
     @Override
     public Collection<Question> getQuestions(int amount) {
         if (amount > questionService.getAll().size()) {
-            throw new BAD_REQUEST("Количество вопросов в системе меньше");
+            throw new BadRequestException("Количество вопросов в системе меньше");
         }
         Set<Question> randomQuestions = new HashSet<>();
 

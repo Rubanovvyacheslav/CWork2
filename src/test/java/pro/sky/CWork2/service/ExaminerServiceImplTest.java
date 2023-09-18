@@ -7,11 +7,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pro.sky.CWork2.domain.Question;
-import pro.sky.CWork2.exception.BAD_REQUEST;
+import pro.sky.CWork2.exception.BadRequestException;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ExaminerServiceImplTest {
@@ -28,27 +29,26 @@ class ExaminerServiceImplTest {
         testList.add(new Question("вопрос1", "ответ1"));
         testList.add(new Question("вопрос2", "ответ2"));
         testList.add(new Question("вопрос3", "ответ3"));
-        testList.add(new Question("вопрос4", "ответ4"));
-        testList.add(new Question("вопрос5", "ответ5"));
     }
 
     @Test
-    void getQuestionsExceptionTest() {
-        String expectedErrorMessage = "Количество вопросов в системе меньше";
-        Exception exception = assertThrows(BAD_REQUEST.class, () -> examinerServiceMock.getQuestions(javaQuestionServiceMock.getAll().size() + 1));
-        assertEquals(expectedErrorMessage, exception.getMessage());
+    void testGetQuestionsException() {
+        when(javaQuestionServiceMock.getAll()).thenReturn(testList);
+        assertThrows(BadRequestException.class, () -> examinerServiceMock.getQuestions(javaQuestionServiceMock.getAll().size() + 1));
     }
 
+
     @Test
-    void getQuestions() {
-        int actualSize = 5;
-        int resultSize = 5;
-        Random random = new Random();
-        Set<Question> randomTestSet = new HashSet<>();
-        while (randomTestSet.size() < resultSize) {
-            int r = random.nextInt(testList.size());
-            randomTestSet.add(testList.get(r));
-        }
-        assertEquals(actualSize, randomTestSet.size());
+    void testGetQuestions() {
+        when(javaQuestionServiceMock.getAll()).thenReturn(testList);
+        when(javaQuestionServiceMock.getRandomQuestion()).thenReturn(
+                new Question("вопрос1", "ответ1"),
+                new Question("вопрос1", "ответ1"),
+                new Question("вопрос2", "ответ2"),
+                new Question("вопрос2", "ответ2"),
+                new Question("вопрос3", "ответ3"));
+        assertIterableEquals(testList, examinerServiceMock.getQuestions(3));
+
     }
+
 }
